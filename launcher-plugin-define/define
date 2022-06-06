@@ -3,48 +3,19 @@
 import json
 import os
 import sys
+import re
 
-import os
-from multiprocessing import Process
-
-
-def detachify(func):
-    """Decorate a function so that its calls are async in a detached process.
-
-    Usage
-    -----
-
-    .. code::
-            import time
-
-            @detachify
-            def f(message):
-                time.sleep(5)
-                print(message)
-
-            f('Async and detached!!!')
-
-    """
-    # create a process fork and run the function
-    def forkify(*args, **kwargs):
-        if os.fork() != 0:
-            return
-        func(*args, **kwargs)
-
-    # wrapper to run the forkified function
-    def wrapper(*args, **kwargs):
-        proc = Process(target=lambda: forkify(*args, **kwargs))
-        proc.start()
-        proc.join()
-        return
-
-    return wrapper
-
-@detachify
 def lookup(word):
-    os.system('flatpak run org.goldendict.GoldenDict ' + word)
-
-# App
+    response = os.popen(f'dict {word}').read()
+    # response numbers all the definitions. For now, I think it's safe to assume the 
+    # first definition is the one being looked for. + 3 because '1. ' is 3 chars long
+    startLocation = response.find("1. ") + 3
+    # At the end of a definition there is commonly '[1913 Webster]' 
+    # which realistically I also don't care about
+    endLocation = re.search('\[\d{4}', response).start()
+    result = response[startLocation:endLocation]
+    # return the sliced above string with multiple spaces removed
+    return re.sub(' +', ' ', result)
 
 class App(object):
 
@@ -55,19 +26,18 @@ class App(object):
         if not self.match:
             return
 
-        lookup(self.match)
         sys.stdout.write('"Close"\n')
         sys.stdout.flush()
 
     def search(self, query):
         self.match = query.split(' ', 1)[1]
+        self.match = self.match.capitalize()
 
         sys.stdout.write(json.dumps({
             'Append': {
                 'id': 0,
-                'name': 'Find Definition',
-                check this out -> dict engineer | grep --fixed-strings --context=2 "1."
-                'description': f'Lookup {self.match}',
+                'name': f'Define {self.match}',
+                'description': f'\n{lookup(self.match)}',
                 'keywords': None,
                 'icon': None,
                 'exec': None,
