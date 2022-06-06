@@ -1,4 +1,4 @@
-# A Dictionary for the Pop!_OS launcher
+# A Dictionary for the Pop!_OS launcher - Work in process
 
 This brings together several resources that create an easy-to-use dictionary experience similar to Mac OS X. You can open the Pop Launcher and type "define XYZ" to show the definition of XYZ in multiple dictionaries.
 
