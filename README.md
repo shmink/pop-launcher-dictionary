@@ -7,7 +7,7 @@ This brings together several resources that create an easy-to-use dictionary exp
 ## Install
 
 ```
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/shmink/pop-launcher-dictionary/master/install.sh)"
+$ /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/shmink/pop-launcher-dictionary/master/install.sh)"
 ```
 
 
